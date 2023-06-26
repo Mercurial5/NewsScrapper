@@ -3,6 +3,7 @@ from typing import Iterator
 import feedparser
 import nltk
 import requests
+from dateparser import parse
 from newspaper import Article
 from requests import RequestException
 
@@ -27,10 +28,10 @@ class Scrapper:
         for index, article in enumerate(unique_articles):
             print(f'{index}/{len(unique_articles)}')
             try:
+                article_date = parse(article['published'])
                 article = Article(article['link'])
-                article.download()
-                article.parse()
-                article.nlp()
+                article.build()
+                article.publish_date = article_date
 
                 yield article
             except Exception:
