@@ -23,8 +23,9 @@ class Scrapper:
                 articles_bunch.append(self.__get_articles(query, country))
 
         plain_articles = [article for article_bunch in articles_bunch for article in article_bunch]
-        for index, article in enumerate(plain_articles):
-            print(f'{index}/{len(plain_articles)}')
+        unique_articles = list(self.__get_unique_articles(plain_articles))
+        for index, article in enumerate(unique_articles):
+            print(f'{index}/{len(unique_articles)}')
             try:
                 article = Article(article['link'])
                 article.download()
@@ -68,3 +69,11 @@ class Scrapper:
         article.parse()
         article.nlp()
         return article
+
+    @staticmethod
+    def __get_unique_articles(plain_articles: list[dict]) -> Iterator[dict]:
+        links = set()
+        for article in plain_articles:
+            if article['link'] not in links:
+                links.add(article['link'])
+                yield article
